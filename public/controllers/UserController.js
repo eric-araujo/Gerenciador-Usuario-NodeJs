@@ -209,17 +209,39 @@ class UserController {
 
     selectAll() {
 
-        let users = User.getUsersStorage();
+        //let users = User.getUsersStorage();
 
-        users.forEach(dataUser => {
+        let ajax = new XMLHttpRequest();
 
-            let user = new User();
+        ajax.open('GET', '/users');
 
-            user.loadFromJSON(dataUser);
+        ajax.onload = event => {
 
-            this.addLine(user);
+            let obj = { users : [] };
 
-        });
+            try {
+
+                obj = JSON.parse(ajax.responseText);
+
+            }catch(e) {
+
+                console.error(e);
+
+            }
+
+            obj.users.forEach(dataUser => {
+
+                let user = new User();
+
+                user.loadFromJSON(dataUser);
+
+                this.addLine(user);
+
+            });
+
+        }
+
+        ajax.send();
 
     }
 
@@ -235,7 +257,7 @@ class UserController {
 
     getTr(dataUser, tr = null) {
 
-        if(tr === null) tr = document.createElement('tr');
+        if (tr === null) tr = document.createElement('tr');
 
         tr.dataset.user = JSON.stringify(dataUser);
 
