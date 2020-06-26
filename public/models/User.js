@@ -127,33 +127,49 @@ class User {
 
     }
 
+    toJSON() {
+
+        let json = {};
+
+        Object.keys(this).forEach(key => {
+
+            if (this[key] !== undefined) json[key] = this[key];
+
+        });
+
+        return json;
+
+    }
+
     save() {
 
-        let users = User.getUsersStorage();
+        return new Promise((resolve, reject) => {
 
-        if (this.id > 0) {
+            let promise;
 
-            users.map(u => {
+            if (this.id) {
 
-                if (u._id == this.id) {
+                promise = HttpRequest.put(`/users/${this.id}`, this.toJSON());
 
-                    Object.assign(u, this);
+            } else {
 
-                }
+                promise = HttpRequest.post(`/users`, this.toJSON());
 
-                return u;
+            }
+
+            promise.then(data => {
+
+                this.loadFromJSON(data);
+                
+                resolve(this);
+
+            }).catch(e => {
+
+                reject(e);
 
             });
 
-        } else {
-
-            this._id = this.getNewID();
-
-            users.push(this);
-
-        }
-
-        localStorage.setItem("users", JSON.stringify(users));
+        });
 
     }
 
@@ -163,7 +179,7 @@ class User {
 
         users.forEach((userData, index) => {
 
-            if(this._id == userData._id){
+            if (this._id == userData._id) {
 
                 users.splice(index, 1);
 
