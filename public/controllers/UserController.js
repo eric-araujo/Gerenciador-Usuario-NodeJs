@@ -213,7 +213,7 @@ class UserController {
 
     selectAll() {
 
-        User.getUsersStorage.then(data => {
+        User.getUsersStorage().then(data => {
 
             data.forEach(dataUser => {
 
